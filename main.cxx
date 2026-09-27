@@ -1,7 +1,12 @@
 #include <iostream>
+#include <string>
 using namespace std;
 
-// code map
+bool isRunning=true;
+int currentlevel=1;
+string message=" ";
+
+// Map 1
 char map[5][5] = {
     {'P', '.', '#', '.', '.'},
     {'.', '#', '.', '.', '.'},
@@ -9,6 +14,16 @@ char map[5][5] = {
     {'#', '.', '.', '#', '.'},
     {'.', '.', '.', '.', 'E'}
 	};
+
+// Map 2
+char map2[5][5] = {
+    {'P', '.', '.', '.', '.'},
+    {'#', '#', '#', '.', '.'},
+    {'.', '.', '.', '.', '#'},
+    {'.', '#', '#', '.', '.'},
+    {'.', '.', '.', '.', 'E'}
+};
+
 // struct nhân vật
 struct player {
 	int row=0;
@@ -23,16 +38,34 @@ char input() {
 	return huong;
 }
 
-// hàm map
-void DrawMap() {
+// hàm map 1
+void DrawMap1() {
+		
+		system("clear");
 		for (int i=0;i<5;i++) {
 			for (int n=0;n<5;n++) {
 				cout<<map[i][n]<<" ";
 			}
 			cout<<endl;
 		}
-	}
+		if (message!=" ") {
+			cout<<">>"<<message<<"<<"<<endl;
+		}
+}
 	
+//hàm map 2
+void DrawMap2(int level) {
+
+	if (level==2) {
+		for (int i=0;i<5;i++) {
+				for (int j=0;j<5;j++) {
+					map[i][j]=map2[i][j];
+				}
+			}
+			message="\n=== CHÚC MỪNG! BẠN ĐÃ QUA MAP 2! ===\n";
+	}
+}
+
 	// hàm update
 	void update (player &P, char huong) {
 		int nextRow=P.row;
@@ -44,10 +77,25 @@ void DrawMap() {
 		else if (huong=='D'||huong=='d') nextCol++;
 		
 		if (nextRow<0||nextRow>=5||nextCol<0||nextCol>=5) {
-			cout<<"vượt biên rồi!"<<endl;
+			message="vượt biên rồi!";
 		} else if (map[nextRow][nextCol]=='#') {
-			cout<<"đụng tường rồi!"<<endl;
+			message="đụng tường rồi!";
+		} else if (map[nextRow][nextCol]=='O') {
+			message="===bạn đã thua===";
+			isRunning=false;
+		} else if (map[nextRow][nextCol]=='E') {
+			currentlevel++;
+			
+			if (currentlevel<=2) {
+				DrawMap2(currentlevel);
+				P.row=0;
+				P.col=0;
+			} else {
+				message="bạn đã hoàn thành game";
+				isRunning=false;
+			}
 		} else {
+			message=" ";
 			map[P.row][P.col]='.';
 			P.row=nextRow;
 			P.col=nextCol;
@@ -60,10 +108,10 @@ int main() {
 	player P;
 	
 	// bắt đầu trò chơi
-		while ((P.row!=4||P.col!=4) && (P.row!=2||P.col!=2)) {
+		while (isRunning) {
 				
 			// tạo map
-			DrawMap();
+			DrawMap1();
 				
 			//hướng di chuyển
 			char huong=input();
@@ -72,11 +120,7 @@ int main() {
 			update(P,huong);
 			
 		}
-	if (P.row==2 && P.col==2) {
-		cout<<"\n---bạn đã thua---";
-	} else if (P.row==4 && P.col==4) {
-		cout<<"\n---bạn đã thắng---";
-	}
+		DrawMap1();
 	
 	return 0;
 }
