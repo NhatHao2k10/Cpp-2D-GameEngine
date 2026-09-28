@@ -1,28 +1,16 @@
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 #include <string>
 using namespace std;
 
+const int Map_size=10;
 bool isRunning=true;
 int currentlevel=1;
 string message=" ";
 
-// Map 1
-char map[5][5] = {
-    {'P', '.', '#', '.', '.'},
-    {'.', '#', '.', '.', '.'},
-    {'.', '.', 'O', '#', '.'},
-    {'#', '.', '.', '#', '.'},
-    {'.', '.', '.', '.', 'E'}
-	};
-
-// Map 2
-char map2[5][5] = {
-    {'P', '.', '.', '.', '.'},
-    {'#', '#', '#', '.', '.'},
-    {'.', '.', '.', '.', '#'},
-    {'.', '#', '#', '.', '.'},
-    {'.', '.', '.', '.', 'E'}
-};
+// Map
+char map[Map_size][Map_size];
 
 // struct nhân vật
 struct player {
@@ -38,13 +26,13 @@ char input() {
 	return huong;
 }
 
-// hàm map 1
-void DrawMap1() {
+// hàm map 
+void DrawMap() {
 		
 		system("clear");
-		for (int i=0;i<5;i++) {
-			for (int n=0;n<5;n++) {
-				cout<<map[i][n]<<" ";
+		for (int i=0;i<Map_size;i++) {
+			for (int j=0;j<Map_size;j++) {
+				cout<<map[i][j]<<" ";
 			}
 			cout<<endl;
 		}
@@ -53,17 +41,23 @@ void DrawMap1() {
 		}
 }
 	
-//hàm map 2
-void DrawMap2(int level) {
-
-	if (level==2) {
-		for (int i=0;i<5;i++) {
-				for (int j=0;j<5;j++) {
-					map[i][j]=map2[i][j];
-				}
+// hàm tạo map
+void GenerateMap(int level) {
+	for (int i=0;i<Map_size;i++) {
+		for (int j=0;j<Map_size;j++) {
+			int rate=rand() %100;
+			if (rate<15) {
+				map[i][j]='#';
+			} else if (rate<20) {
+				map[i][j]='O';
+			} else {
+				map[i][j]='.';
 			}
-			message="\n=== CHÚC MỪNG! BẠN ĐÃ QUA MAP 2! ===\n";
+		}
 	}
+	map[0][0]='P';
+	map[Map_size-1][Map_size-1]='E';
+	message = "\n===MAP " + to_string(level) + "!===\n";
 }
 
 	// hàm update
@@ -76,7 +70,7 @@ void DrawMap2(int level) {
 		else if (huong=='A'||huong=='a') nextCol--;
 		else if (huong=='D'||huong=='d') nextCol++;
 		
-		if (nextRow<0||nextRow>=5||nextCol<0||nextCol>=5) {
+		if (nextRow<0||nextRow>=Map_size||nextCol<0||nextCol>=Map_size) {
 			message="vượt biên rồi!";
 		} else if (map[nextRow][nextCol]=='#') {
 			message="đụng tường rồi!";
@@ -87,7 +81,7 @@ void DrawMap2(int level) {
 			currentlevel++;
 			
 			if (currentlevel<=2) {
-				DrawMap2(currentlevel);
+				GenerateMap(currentlevel);
 				P.row=0;
 				P.col=0;
 			} else {
@@ -104,14 +98,18 @@ void DrawMap2(int level) {
 	}
 
 int main() {
+	
+	srand(time(0));
 
 	player P;
+	
+	GenerateMap(currentlevel);
 	
 	// bắt đầu trò chơi
 		while (isRunning) {
 				
 			// tạo map
-			DrawMap1();
+			DrawMap();
 				
 			//hướng di chuyển
 			char huong=input();
@@ -120,7 +118,7 @@ int main() {
 			update(P,huong);
 			
 		}
-		DrawMap1();
+		DrawMap();
 	
 	return 0;
 }
